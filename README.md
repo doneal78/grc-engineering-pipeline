@@ -25,12 +25,33 @@ Start here: read the [portfolio case study](PORTFOLIO-CASE-STUDY.md), then follo
 
 ## Architecture
 
-```
-flowchart TD
-    A["Terraform controls"] --> B["Rego and Conftest"]
-    B --> C["Pull-request gate"]
-    C --> D["Signed evidence"]
-    D --> O["OSCAL traversal"]
+```mermaid
+flowchart LR
+    subgraph Week1["Week 1: Build"]
+        TF["Terraform SC-28 AC-3 CM-6 AU-3"]
+    end
+    subgraph Week2["Week 2: Enforce"]
+        OPA["OPA and Rego 6/6 tests passing"]
+    end
+    subgraph Week3["Week 3: Gate"]
+        GH["GitHub Actions Pass=Merge Fail=Blocked"]
+    end
+    subgraph Week4["Week 4: Sign"]
+        CS["Cosign Keyless SHA-256 Chain Intact"]
+    end
+    subgraph Week5["Week 5: Observe"]
+        AWS["Security Hub CloudTrail NIST 800-53 Rev 5"]
+    end
+    subgraph Week6["Week 6: Translate"]
+        OSCAL["OSCAL 1.2.1 4 controls mapped trestle VALID"]
+    end
+
+    TF --> OPA
+    OPA --> GH
+    GH -->|compliant| CS
+    GH -->|violation| BLOCK["MERGE BLOCKED"]
+    CS --> AWS
+    AWS --> OSCAL
 ```
 
 ---
