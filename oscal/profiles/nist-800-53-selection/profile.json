@@ -1,0 +1,29 @@
+{
+  "profile": {
+    "uuid": "2e24ca26-f11a-4706-9cac-3d30b27af57f",
+    "metadata": {
+      "title": "OracleRecon GRC Pipeline Control Selection",
+      "last-modified": "2026-07-22T16:06:00.000000-05:00",
+      "version": "1.0.0",
+      "oscal-version": "1.2.1"
+    },
+    "imports": [
+      {
+        "href": "https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json",
+        "include-controls": [
+          {
+            "with-ids": [
+              "sc-28",
+              "ac-3",
+              "au-3",
+              "cm-6"
+            ]
+          }
+        ]
+      }
+    ],
+    "merge": {
+      "as-is": true
+    }
+  }
+}

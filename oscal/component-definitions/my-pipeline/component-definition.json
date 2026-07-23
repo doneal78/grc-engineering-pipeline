@@ -1,0 +1,112 @@
+{
+  "component-definition": {
+    "uuid": "8340305a-bde0-4ce3-917f-a90e85dc4d19",
+    "metadata": {
+      "title": "OracleRecon GRC Engineering Pipeline",
+      "last-modified": "2026-07-22T15:42:54.129105-05:00",
+      "version": "1.0.0",
+      "oscal-version": "1.2.1"
+    },
+    "components": [
+      {
+        "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "type": "software",
+        "title": "GRC Engineering Pipeline",
+        "description": "An end-to-end compliance automation pipeline built with Terraform, Open Policy Agent, GitHub Actions, and Cosign. Deployed on AWS. Enforces NIST 800-53 controls through infrastructure as code, policy as code, a CI gate, and signed tamper-evident evidence.",
+        "control-implementations": [
+          {
+            "uuid": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+            "source": "https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json",
+            "description": "NIST SP 800-53 Rev 5 controls implemented by the OracleRecon GRC Engineering Pipeline across six weekly challenge phases.",
+            "implemented-requirements": [
+              {
+                "uuid": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                "control-id": "sc-28",
+                "description": "Protection of information at rest. All AWS S3 buckets in the pipeline are enforced to use AES-256 server-side encryption via Terraform resource aws_s3_bucket_server_side_encryption_configuration. Validated by OPA Rego policy sc28_encryption_aws.rego which denies any Terraform plan where a bucket lacks a matching encryption configuration. The policy uses reference matching to correlate the encryption resource to its bucket at plan time before any infrastructure is created.",
+                "props": [
+                  {
+                    "name": "implementation-resource",
+                    "value": "aws_s3_bucket_server_side_encryption_configuration (Terraform)"
+                  },
+                  {
+                    "name": "policy-file",
+                    "value": "policies/sc28_encryption_aws.rego"
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "https://github.com/doneal78/grc-club-week3/actions",
+                    "rel": "evidence",
+                    "text": "GitHub Actions run producing signed evidence bundle for SC-28 compliance gate"
+                  }
+                ]
+              },
+              {
+                "uuid": "d4e5f6a7-b8c9-0123-defa-234567890123",
+                "control-id": "ac-3",
+                "description": "Access enforcement. All AWS S3 buckets in the pipeline are enforced to block all four public access vectors via Terraform resource aws_s3_bucket_public_access_block with BlockPublicAcls, IgnorePublicAcls, BlockPublicPolicy, and RestrictPublicBuckets all set to true. Validated by OPA Rego policy ac3_no_public_aws.rego which denies any Terraform plan where a bucket is missing a public access block or has any flag set to false.",
+                "props": [
+                  {
+                    "name": "implementation-resource",
+                    "value": "aws_s3_bucket_public_access_block (Terraform)"
+                  },
+                  {
+                    "name": "policy-file",
+                    "value": "policies/ac3_no_public_aws.rego"
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "https://github.com/doneal78/grc-club-week3/actions",
+                    "rel": "evidence",
+                    "text": "GitHub Actions run producing signed evidence bundle for AC-3 compliance gate"
+                  }
+                ]
+              },
+              {
+                "uuid": "e5f6a7b8-c9d0-1234-efab-345678901234",
+                "control-id": "au-3",
+                "description": "Content of audit records. AWS CloudTrail is deployed via Terraform resource aws_cloudtrail with multi-region coverage, global service event capture, and log file validation enabled. CloudTrail records the identity of the actor, the time of the event, the source IP address, the action performed, and the resources affected for every API call made in the account.",
+                "props": [
+                  {
+                    "name": "implementation-resource",
+                    "value": "aws_cloudtrail (Terraform)"
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "https://gitlab.com/doneal78-group/grc-engineering-portfolio/grc-terraform-baseline",
+                    "rel": "evidence",
+                    "text": "Terraform baseline GitLab repo containing CloudTrail deployment for AU-3"
+                  }
+                ]
+              },
+              {
+                "uuid": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+                "control-id": "cm-6",
+                "description": "Configuration settings. All taggable AWS resources in the pipeline are required to carry four compliance tags: Project, Environment, ManagedBy, and ComplianceScope. Tags are enforced automatically via provider default_tags in the Terraform AWS provider block so they cannot be omitted on any resource. Validated by OPA Rego policy cm6_required_tags_aws.rego which denies any Terraform plan where a taggable resource is missing one or more required tags.",
+                "props": [
+                  {
+                    "name": "implementation-resource",
+                    "value": "provider default_tags (Terraform AWS provider)"
+                  },
+                  {
+                    "name": "policy-file",
+                    "value": "policies/cm6_required_tags_aws.rego"
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "https://github.com/doneal78/grc-club-week3/actions",
+                    "rel": "evidence",
+                    "text": "GitHub Actions run producing signed evidence bundle for CM-6 compliance gate"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

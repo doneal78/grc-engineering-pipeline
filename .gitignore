@@ -1,0 +1,7 @@
+terraform/.terraform/
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/tfplan
+evidence/*.tar.gz
+evidence/*.sha256
+evidence/*.sig.bundle
