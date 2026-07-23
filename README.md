@@ -6,6 +6,9 @@ An end-to-end, evidence-first demonstration of engineered assurance. Terraform d
 
 Start here: read the [portfolio case study](PORTFOLIO-CASE-STUDY.md), then follow each claim to its proof.
 
+![GRC Engineering Pipeline Overview](pipeline-overview.png)
+
+
 ---
 
 ## Pipeline
