@@ -120,7 +120,7 @@ Green PR (all controls passing, merged): https://github.com/doneal78/grc-club-we
 
 Red PR (SC-28 regression blocked by branch protection): https://github.com/doneal78/grc-club-week3/pull/2
 
-Policy tests 6/6 passing: https://gitlab.com/doneal78-group/grc-engineering-portfolio/grc-club-week2
+Policy tests 6/6 passing: https://github.com/doneal78/grc-club-week2
 
 Signed evidence with CHAIN INTACT: https://github.com/doneal78/grc-club-week3/actions
 
@@ -128,9 +128,13 @@ Signed evidence with CHAIN INTACT: https://github.com/doneal78/grc-club-week3/ac
 
 ## Related portfolio work
 
-Full GRC Engineering portfolio on GitLab: https://gitlab.com/doneal78-group/grc-engineering-portfolio
+GRC Compliance Checker: https://github.com/doneal78/grc-compliance-checker
 
-Projects include an AWS Compliance Checker (boto3, Python), a Terraform compliance baseline deployed to a live AWS account, Security Hub with FSBP and CIS standards, and a SOC 2 evidence collection pipeline in progress.
+Terraform Compliance Baseline: https://github.com/doneal78/grc-terraform-baseline
+
+SOC 2 Evidence Pipeline: https://github.com/doneal78/grc-soc2-pipeline
+
+Weekly Challenges: https://github.com/doneal78/grc-club-week1 | https://github.com/doneal78/grc-club-week2 | https://github.com/doneal78/grc-club-week5 | https://github.com/doneal78/grc-club-week6
 
 ---
 
