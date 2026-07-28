@@ -27,6 +27,12 @@ jobs:
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3
 
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::868832438584:role/grc-vault-writer
+          aws-region: us-east-1
+
       - name: Run policy gate
         id: gate
         run: |
@@ -70,6 +76,35 @@ jobs:
           else
             echo "PASS: tampered bundle correctly rejected"
           fi
+
+      - name: Upload to immutable vault
+        if: always()
+        run: |
+          RUN_ID="${{ github.run_id }}"
+          TIMESTAMP=$(date -u +%Y%m%dT%H%M%SZ)
+          KEY="pipeline-runs/${TIMESTAMP}-run${RUN_ID}/evidence.tar.gz"
+          SIG_KEY="pipeline-runs/${TIMESTAMP}-run${RUN_ID}/evidence.sig.bundle"
+          HASH_KEY="pipeline-runs/${TIMESTAMP}-run${RUN_ID}/evidence.sha256"
+          aws s3 cp evidence.tar.gz s3://oraclerecon-grc-vault/${KEY}
+          aws s3 cp evidence.sig.bundle s3://oraclerecon-grc-vault/${SIG_KEY}
+          aws s3 cp evidence.sha256 s3://oraclerecon-grc-vault/${HASH_KEY}
+          echo "VAULT_KEY=${KEY}" >> "$GITHUB_ENV"
+          echo "Vault upload complete: s3://oraclerecon-grc-vault/${KEY}"
+
+      - name: Verify vault retention
+        if: always()
+        run: |
+          VERSION_ID=$(aws s3api list-object-versions \
+            --bucket oraclerecon-grc-vault \
+            --prefix "pipeline-runs/" \
+            --query 'Versions[0].VersionId' \
+            --output text)
+          aws s3api get-object-retention \
+            --bucket oraclerecon-grc-vault \
+            --key "${VAULT_KEY}" \
+            --version-id "${VERSION_ID}" \
+            --output json
+          echo "VAULT RETENTION CONFIRMED"
 
       - name: Upload evidence and signatures
         if: always()
