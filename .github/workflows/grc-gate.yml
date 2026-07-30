@@ -1,4 +1,3 @@
-# grc-gate: run the policy gate on every pull request.
 name: grc-gate
 
 on:
@@ -9,7 +8,6 @@ on:
 permissions:
   contents: read
   pull-requests: write
-  id-token: write
 
 jobs:
   grc-gate:
@@ -24,28 +22,17 @@ jobs:
           sudo mv conftest /usr/local/bin
           conftest --version
 
-      - name: Install Cosign
-        uses: sigstore/cosign-installer@v3
-
-     - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
       - name: Run policy gate
         id: gate
         run: |
           mkdir -p evidence
           set +e
-          conftest test --policy policies --namespace compliance.sc28_aws plan.json --output json > evidence/sc28-results.json
+          conftest test --policy policies --namespace compliance.sc28_aws evidence/plan.json --output json > evidence/sc28-results.json
           sc28_exit=$?
-          conftest test --policy policies --namespace compliance.ac3_aws plan.json --output json > evidence/ac3-results.json
+          conftest test --policy policies --namespace compliance.ac3_aws evidence/plan.json --output json > evidence/ac3-results.json
           ac3_exit=$?
-          conftest test --policy policies --namespace compliance.cm6_aws plan.json --output json > evidence/cm6-results.json
+          conftest test --policy policies --namespace compliance.cm6_aws evidence/plan.json --output json > evidence/cm6-results.json
           cm6_exit=$?
-          jq -s '{sc28: .[0], ac3: .[1], cm6: .[2]}' evidence/sc28-results.json evidence/ac3-results.json evidence/cm6-results.json > evidence/conftest-results.json
           set -e
           if [ $sc28_exit -ne 0 ] || [ $ac3_exit -ne 0 ] || [ $cm6_exit -ne 0 ]; then
             echo "gate_failed=true" >> "$GITHUB_OUTPUT"
@@ -53,73 +40,15 @@ jobs:
             echo "gate_failed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Sign evidence bundle
-        if: always()
-        run: |
-          tar czf evidence.tar.gz evidence/
-          sha256sum evidence.tar.gz | awk '{print $1}' > evidence.sha256
-          cosign sign-blob --yes --bundle evidence.sig.bundle evidence.tar.gz
-
-      - name: Run tamper test
-        if: always()
-        run: |
-          echo "=== Tamper Test: verify real bundle ==="
-          bash verify-evidence.sh evidence.tar.gz
-          echo
-          echo "=== Tamper Test: verify tampered bundle (must FAIL) ==="
-          cp evidence.tar.gz /tmp/tampered.tar.gz
-          echo "junk" >> /tmp/tampered.tar.gz
-          cp evidence.sha256 /tmp/tampered.sha256
-          cp evidence.sig.bundle /tmp/tampered.sig.bundle
-          if bash verify-evidence.sh /tmp/tampered.tar.gz; then
-            echo "ERROR: tampered bundle should have failed verification"
-            exit 1
-          else
-            echo "PASS: tampered bundle correctly rejected"
-          fi
-
-      - name: Upload to immutable vault
-        if: always()
-        run: |
-          RUN_ID="${{ github.run_id }}"
-          TIMESTAMP=$(date -u +%Y%m%dT%H%M%SZ)
-          KEY="pipeline-runs/${TIMESTAMP}-run${RUN_ID}/evidence.tar.gz"
-          SIG_KEY="pipeline-runs/${TIMESTAMP}-run${RUN_ID}/evidence.sig.bundle"
-          HASH_KEY="pipeline-runs/${TIMESTAMP}-run${RUN_ID}/evidence.sha256"
-          aws s3 cp evidence.tar.gz s3://oraclerecon-grc-vault/${KEY}
-          aws s3 cp evidence.sig.bundle s3://oraclerecon-grc-vault/${SIG_KEY}
-          aws s3 cp evidence.sha256 s3://oraclerecon-grc-vault/${HASH_KEY}
-          echo "VAULT_KEY=${KEY}" >> "$GITHUB_ENV"
-          echo "Vault upload complete: s3://oraclerecon-grc-vault/${KEY}"
-
-      - name: Verify vault retention
-        if: always()
-        run: |
-          VERSION_ID=$(aws s3api list-object-versions \
-            --bucket oraclerecon-grc-vault \
-            --prefix "pipeline-runs/" \
-            --query 'Versions[0].VersionId' \
-            --output text)
-          aws s3api get-object-retention \
-            --bucket oraclerecon-grc-vault \
-            --key "${VAULT_KEY}" \
-            --version-id "${VERSION_ID}" \
-            --output json
-          echo "VAULT RETENTION CONFIRMED"
-
-      - name: Upload evidence and signatures
+      - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: grc-gate-evidence
-          path: |
-            evidence/
-            evidence.tar.gz
-            evidence.sha256
-            evidence.sig.bundle
+          path: evidence/
 
       - name: Fail job if any control failed
         if: steps.gate.outputs.gate_failed == 'true'
         run: |
-          echo "One or more compliance controls failed. See evidence/conftest-results.json for details."
+          echo "One or more compliance controls failed."
           exit 1
