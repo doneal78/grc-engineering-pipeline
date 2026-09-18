@@ -22,7 +22,7 @@ Week 6: An OSCAL component definition and profile that formally map the four imp
 
 All code is public and version controlled.
 
-GitLab portfolio: https://gitlab.com/doneal78-group/grc-engineering-portfolio
+GitHub portfolio: https://github.com/doneal78
 
 GitHub CI gate and signing pipeline: https://github.com/doneal78/grc-club-week3
 
@@ -30,11 +30,11 @@ Green PR (all controls passing, merged): https://github.com/doneal78/grc-club-we
 
 Red PR (CM-6 tag violation, blocked by branch protection): https://github.com/doneal78/grc-club-week3/pull/2
 
-OPA policy tests 6/6 passing: https://gitlab.com/doneal78-group/grc-engineering-portfolio/grc-club-week2
+OPA policy tests 6/6 passing:https://github.com/doneal78/grc-club-week2
 
 Signed evidence with CHAIN INTACT verification: https://github.com/doneal78/grc-club-week3/actions
 
-OSCAL validation VALID: https://gitlab.com/doneal78-group/grc-engineering-portfolio/grc-club-week6
+OSCAL validation VALID: https://github.com/doneal78/grc-club-week6
 
 ## What I would do next
 
