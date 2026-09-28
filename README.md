@@ -60,7 +60,7 @@ flowchart LR
 
 A compliant pull request passed the gate and merged cleanly.
 
-A deliberate SC-28 regression (encryption block removed) was blocked at the platform level by branch protection. The failing check is visible in the PR history and the evidence artifact was preserved.
+A deliberate CM-6 violation (required ComplianceScope tag removed) was blocked at the platform level by branch protection. The failing check is visible in the PR history and the evidence artifact was preserved.
 
 The tamper test proves one appended byte breaks the cryptographic chain immediately, with CHAIN INTACT on the real bundle and FAIL hash mismatch on the tampered copy side by side.
 
