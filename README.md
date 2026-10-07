@@ -62,7 +62,9 @@ A compliant pull request passed the gate and merged cleanly.
 
 A deliberate CM-6 violation (required ComplianceScope tag removed) was blocked at the platform level by branch protection. The failing check is visible in the PR history and the evidence artifact was preserved.
 
-The tamper test proves one appended byte breaks the cryptographic chain immediately, with CHAIN INTACT on the real bundle and FAIL hash mismatch on the tampered copy side by side.
+The tamper test proves one appended word breaks the cryptographic chain immediately, with CHAIN INTACT on the real bundle and FAIL hash mismatch on the tampered copy side by side.
+
+![Tamper test output: CHAIN INTACT on the real bundle, FAIL hash mismatch on the tampered copy](tamper-test-output.png)
 
 Two OSCAL documents validated with `trestle validate` returning VALID on both.
 
@@ -122,7 +124,9 @@ Red PR (SC-28 regression blocked by branch protection): https://github.com/donea
 
 Policy tests 6/6 passing: https://github.com/doneal78/grc-club-week2
 
-Signed evidence with CHAIN INTACT: https://github.com/doneal78/grc-club-week3/actions
+Signed evidence with CHAIN INTACT (October 2026 run, kept 90 days): https://github.com/doneal78/grc-club-week3/actions/runs/37697865894
+
+The screenshot above is the permanent record of that run, since GitHub deletes Actions logs and artifacts after 90 days.
 
 ---
 
@@ -140,6 +144,6 @@ Weekly Challenges: https://github.com/doneal78/grc-club-week1 | https://github.c
 
 ## Built by
 
-David O'Neal — Cybersecurity PM at Legato Security, pivoting to GRC Engineering.
+David O'Neal, Certified GRC Engineer (Auditor Specialty) building compliance automation in AWS.
 
 LinkedIn: https://www.linkedin.com/in/david-oneal
