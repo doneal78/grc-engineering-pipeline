@@ -120,7 +120,7 @@ Both OSCAL commands must report VALID.
 
 Green PR (all controls passing, merged): https://github.com/doneal78/grc-club-week3/pull/1
 
-Red PR (SC-28 regression blocked by branch protection): https://github.com/doneal78/grc-club-week3/pull/2
+Red PR (CM-6 violation blocked by branch protection): https://github.com/doneal78/grc-club-week3/pull/2
 
 Policy tests 6/6 passing: https://github.com/doneal78/grc-club-week2
 
